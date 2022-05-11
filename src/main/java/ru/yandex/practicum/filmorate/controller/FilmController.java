@@ -19,7 +19,7 @@ public class FilmController {
     private final static Logger log = LoggerFactory.getLogger(FilmController.class);
     private final Map<Integer, Film> films = new HashMap<>();
 
-    @PostMapping({"/film"})
+    @PostMapping({"/films"})
     public Film create(@RequestBody Film film) {
         if (films.containsKey(film.getId())) {
             logWarnAndThrowException("Фильм существует");
@@ -42,7 +42,7 @@ public class FilmController {
         return film;
     }
 
-    @PutMapping({"/film"})
+    @PutMapping({"/films"})
     public Film update(@RequestBody Film film) {
         if (!films.containsKey(film.getId())) {
             logWarnAndThrowException("Фильм не существует");

@@ -17,7 +17,7 @@ import java.util.Map;
 public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
 
-    @PostMapping({"/user"})
+    @PostMapping({"/users"})
     public User create(@RequestBody User user) {
         if (users.containsKey(user.getId())) {
             logWarnAndThrowException("Пользователь существует");
@@ -42,7 +42,7 @@ public class UserController {
         return user;
     }
 
-    @PutMapping({"/user"})
+    @PutMapping({"/users"})
     public User update(@RequestBody User user) {
         if (!users.containsKey(user.getId())) {
             logWarnAndThrowException("Пользователь не существует");
