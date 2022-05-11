@@ -27,7 +27,7 @@ public class FilmController {
         if (film.getName().isEmpty() || film.getName() == null) {
             logWarnAndThrowException("Название не может быть пустым");
         }
-        if (film.getDescription().length() > 200) {
+        if (film.getDescription().length() == 0 || film.getDescription().length() > 200) {
             logWarnAndThrowException("Максимальная длина описания — 200 символов");
         }
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, Month.DECEMBER, 28))) {
