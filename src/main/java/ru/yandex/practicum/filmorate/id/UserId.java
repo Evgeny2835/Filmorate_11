@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.id;
 
 public class UserId {
-    private static int userId;
+    private int userId;
 
-    public static int getUserId() {
+    public int getUserId() {
         return ++userId;
     }
 }

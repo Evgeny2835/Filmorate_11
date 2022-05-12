@@ -13,11 +13,13 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequestMapping({"/users"})
 @Slf4j
 public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
+    private final UserId id = new UserId();
 
-    @PostMapping({"/users"})
+    @PostMapping
     public User create(@RequestBody User user) {
         if (users.containsKey(user.getId())) {
             logWarnAndThrowException("Пользователь существует");
@@ -36,13 +38,13 @@ public class UserController {
         if (user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
-        user.setId(UserId.getUserId());
+        user.setId(id.getUserId());
         log.info("Добавлен пользователь: {}", user);
         users.put(user.getId(), user);
         return user;
     }
 
-    @PutMapping({"/users"})
+    @PutMapping
     public User update(@RequestBody User user) {
         if (!users.containsKey(user.getId())) {
             logWarnAndThrowException("Пользователь не существует");
@@ -52,10 +54,14 @@ public class UserController {
         return user;
     }
 
-    @GetMapping({"/users"})
+    @GetMapping
     public List<User> findAll() {
         log.info("Текущее количество пользователей: {}", users.size());
         return new ArrayList<>(users.values());
+    }
+
+    public Map<Integer, User> getUsers() {
+        return users;
     }
 
     private void logWarnAndThrowException(String message) {
