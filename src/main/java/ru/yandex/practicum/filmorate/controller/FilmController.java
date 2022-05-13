@@ -19,6 +19,7 @@ import java.util.Map;
 public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
     private final FilmId filmId = new FilmId();
+    private static final LocalDate FIRST_RELEASE_DATE = LocalDate.of(1895, Month.DECEMBER, 28);
 
     @PostMapping
     public Film create(@RequestBody Film film) {
@@ -31,7 +32,7 @@ public class FilmController {
         if (film.getDescription().length() == 0 || film.getDescription().length() > 200) {
             logWarnAndThrowException("Описание - обязательный атрибут, максимальная длина - 200 символов");
         }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, Month.DECEMBER, 28))) {
+        if (film.getReleaseDate().isBefore(FIRST_RELEASE_DATE)) {
             logWarnAndThrowException("Дата релиза — не раньше 28 декабря 1895 года");
         }
         if (film.getDuration().isNegative() || film.getDuration().isZero()) {
