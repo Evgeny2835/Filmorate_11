@@ -10,13 +10,11 @@
 Пример кода:
 
 ```
-@PutMapping
-public Film update(@RequestBody Film film){
-    if(!films.containsKey(film.getId())){
-        logWarnAndThrowException("Фильм не существует");
+@PutMapping("/films/{id}/like/{userId}")
+    public void addLike(@PathVariable long id, @PathVariable Long userId) {
+        if (id <= 0 || userId <= 0) {
+            writeLogAndThrowValidationException();
+        }
+        filmService.addLike(id, userId);
     }
-    log.info("Обновлен фильм: {}",film);
-    films.put(film.getId(),film);
-    return film;
-}
 ```

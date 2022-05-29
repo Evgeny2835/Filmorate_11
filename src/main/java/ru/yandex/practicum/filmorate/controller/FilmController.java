@@ -16,6 +16,7 @@ import java.util.List;
 @Slf4j
 public class FilmController {
     private final FilmService filmService;
+    private final String MESSAGE = "Параметры должны принимать положительные значения";
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -76,8 +77,7 @@ public class FilmController {
     }
 
     private void writeLogAndThrowValidationException() {
-        String message = "Параметры должны принимать положительные значения";
-        log.warn(message);
-        throw new ValidationException(message);
+        log.warn(MESSAGE);
+        throw new ValidationException(MESSAGE);
     }
 }
