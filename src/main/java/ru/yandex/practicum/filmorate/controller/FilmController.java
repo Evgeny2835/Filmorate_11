@@ -1,71 +1,83 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.id.FilmId;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+@Component
 @RestController
-@RequestMapping({"/films"})
 @Slf4j
 public class FilmController {
-    private final Map<Integer, Film> films = new HashMap<>();
-    private final FilmId filmId = new FilmId();
-    private static final LocalDate FIRST_RELEASE_DATE = LocalDate.of(1895, Month.DECEMBER, 28);
+    private final FilmService filmService;
+    private final String MESSAGE = "Параметры должны принимать положительные значения";
 
-    @PostMapping
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
+
+    @PostMapping("/films")
     public Film create(@RequestBody Film film) {
-        if (films.containsKey(film.getId())) {
-            logWarnAndThrowException("Фильм существует");
-        }
-        if (film.getName().isEmpty() || film.getName() == null) {
-            logWarnAndThrowException("Название не может быть пустым");
-        }
-        if (film.getDescription().length() == 0 || film.getDescription().length() > 200) {
-            logWarnAndThrowException("Описание - обязательный атрибут, максимальная длина - 200 символов");
-        }
-        if (film.getReleaseDate().isBefore(FIRST_RELEASE_DATE)) {
-            logWarnAndThrowException("Дата релиза — не раньше 28 декабря 1895 года");
-        }
-        if (film.getDuration().isNegative() || film.getDuration().isZero()) {
-            logWarnAndThrowException("Продолжительность фильма должна быть положительной");
-        }
-        film.setId(filmId.getFilmId());
-        log.info("Добавлен фильм: {}", film);
-        films.put(film.getId(), film);
-        return film;
+        return filmService.create(film);
     }
 
-    @PutMapping
+    @PutMapping("/films")
     public Film update(@RequestBody Film film) {
-        if (!films.containsKey(film.getId())) {
-            logWarnAndThrowException("Фильм не существует");
-        }
-        log.info("Обновлен фильм: {}", film);
-        films.put(film.getId(), film);
-        return film;
+        return filmService.update(film);
     }
 
-    @GetMapping
+    @GetMapping("/films")
     public List<Film> findAll() {
-        log.info("Доступно фильмов: {}", films.size());
-        return new ArrayList<>(films.values());
+        return filmService.findAll();
     }
 
-    public Map<Integer, Film> getFilms() {
-        return new HashMap<>(films);
-    }
-
-    private void logWarnAndThrowException(String message) {
+    @GetMapping("/films/{id}")
+    public Film getFilm(@PathVariable Long id) {
+        if (id > 0) {
+            return filmService.getFilm(id);
+        }
+        String message = "Не найден";
         log.warn(message);
-        throw new ValidationException(message);
+        throw new ObjectNotFoundException(message);
+    }
+
+    @PutMapping("/films/{id}/like/{userId}")
+    public void addLike(@PathVariable long id, @PathVariable Long userId) {
+        if (id <= 0 || userId <= 0) {
+            writeLogAndThrowValidationException();
+        }
+        filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping("/films/{id}/like/{userId}")
+    public void removeLike(@PathVariable long id, @PathVariable Long userId) {
+        if (id > 0 && userId > 0) {
+            filmService.removeLike(id, userId);
+            return;
+        }
+        String message = "Не найден";
+        log.warn(message);
+        throw new ObjectNotFoundException(message);
+    }
+
+    @GetMapping("/films/popular")
+    public List<Film> getPopularFilms(
+            @RequestParam(value = "count", defaultValue = "10", required = false) Long count) {
+        if (count <= 0) {
+            writeLogAndThrowValidationException();
+        }
+        return filmService.getPopularFilms(count);
+    }
+
+    private void writeLogAndThrowValidationException() {
+        log.warn(MESSAGE);
+        throw new ValidationException(MESSAGE);
     }
 }
