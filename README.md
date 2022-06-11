@@ -21,7 +21,7 @@
 
 ### ER диаграмма
 
-<img src="/home/user/Yandex.Disk/STORAGE/LEARNING/IT/Yandex/IDEA/FinalSprints/java-filmorate/ER_diagram.png"/>
+![ER_diagram](ER_diagram.png)
 
 ### Пояснение к ER диаграмме
 
