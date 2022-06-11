@@ -37,11 +37,11 @@
 
 Получение всех фильмов:
 
-SELECT *
-FROM films AS f
-LEFT OUTER JOIN likes AS l ON f.film_id = l. film_id
-LEFT OUTER JOIN genre AS g ON f.genre_id = g.genre_id
-LEFT OUTER JOIN rating AS r ON f.rating_id = r.rating_id;
+SELECT *  
+FROM films AS f  
+LEFT OUTER JOIN likes AS l ON f.film_id = l. film_id  
+LEFT OUTER JOIN genre AS g ON f.genre_id = g.genre_id  
+LEFT OUTER JOIN rating AS r ON f.rating_id = r.rating_id;  
 
 Получение всех пользователей:
 
