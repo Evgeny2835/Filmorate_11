@@ -18,3 +18,43 @@
         filmService.addLike(id, userId);
     }
 ```
+
+### ER диаграмма
+
+![ER_diagram](ER_diagram.png)
+
+### Пояснение к ER диаграмме
+
+Таблица genre содержит список жанров фильма.
+У фильма может быть несколько жанров.
+
+Таблица rating содержит перечень возрастных ограничений
+фильма в соответствии с рейтингом Ассоциации кинокомпаний (МРА).
+
+Таблица friendship определяет статус «дружба» между двумя пользователями.
+
+### Примеры запросов для основных операций приложения:
+
+Получение всех фильмов:
+
+SELECT *
+FROM films AS f  
+LEFT OUTER JOIN likes AS l ON f.film_id = l. film_id  
+LEFT OUTER JOIN genre AS g ON f.genre_id = g.genre_id  
+LEFT OUTER JOIN rating AS r ON f.rating_id = r.rating_id;
+
+Получение всех пользователей:
+
+SELECT *
+FROM users AS u  
+LEFT OUTER JOIN friendship AS fr ON u.user_id = fr.user_id;
+
+Получение ТОП-5 наиболее популярных фильмов:
+
+SELECT f.name  
+COUNT(l.user_id)  
+FROM films AS f  
+LEFT OUTER JOIN likes AS l ON f.film_id = l.film_id  
+GROUP BY f.name  
+ORDER BY COUNT(l.user_id) DESC  
+LIMIT 5;  
