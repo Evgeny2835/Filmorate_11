@@ -37,23 +37,20 @@
 
 Получение всех фильмов:
 
-SELECT f.film_id
-FROM films AS f  
-LEFT OUTER JOIN likes AS l ON f.film_id = l. film_id  
-LEFT OUTER JOIN genre AS g ON f.genre_id = g.genre_id  
-LEFT OUTER JOIN rating AS r ON f.rating_id = r.rating_id;
+SELECT film_id
+FROM films;  
 
 Получение всех пользователей:
 
-SELECT u.user_id
-FROM users AS u  
-LEFT OUTER JOIN friendship AS fr ON u.user_id = fr.user_id;
+SELECT user_id
+FROM users;
 
 Получение ТОП-5 наиболее популярных фильмов:
 
-SELECT COUNT(l.user_id)  
-FROM films AS f  
-LEFT OUTER JOIN likes AS l ON f.film_id = l.film_id  
-GROUP BY f.name  
-ORDER BY COUNT(l.user_id) DESC  
-LIMIT 5;  
+SELECT film_id
+FROM(
+SELECT film_id, COUNT(user_id) AS c
+FROM likes
+GROUP BY film_id
+ORDER BY c DESC
+LIMIT 5) AS a;
