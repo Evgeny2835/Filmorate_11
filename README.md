@@ -21,7 +21,7 @@
 
 ### ER диаграмма
 
-![ER_diagram](ER_diagram_2.png)
+![ER_diagram](ER_diagram.png)
 
 ### Пояснение к ER диаграмме
 
