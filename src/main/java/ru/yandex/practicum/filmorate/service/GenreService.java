@@ -13,21 +13,23 @@ import java.util.Collection;
 @Slf4j
 public class GenreService {
     private final JdbcTemplate jdbcTemplate;
+    private static final String SELECT_FROM_GENRES = "SELECT * FROM GENRES";
+    private static final String SELECT_NAME_FROM_GENRES_WHERE_GENRE_ID =
+            "SELECT NAME FROM GENRES WHERE GENRE_ID = ?";
 
     public GenreService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public Collection<Genre> get() {
-        String sql = "SELECT * FROM GENRES";
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> new Genre(
+        return jdbcTemplate.query(SELECT_FROM_GENRES, ((rs, rowNum) -> new Genre(
                 rs.getInt("genre_id"),
                 rs.getString("name"))
         ));
     }
 
     public Genre get(int id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT NAME FROM GENRES WHERE GENRE_ID = ?", id);
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(SELECT_NAME_FROM_GENRES_WHERE_GENRE_ID, id);
         if (userRows.next()) {
             Genre genre = new Genre(
                     id,

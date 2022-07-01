@@ -15,6 +15,15 @@ import java.util.Optional;
 @Slf4j
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
+    private static final String SET_EMAIL_LOGIN_NAME_BIRTHDAY_WHERE_USER_ID =
+            "UPDATE USERS SET email = ?, login = ?, name = ?, birthday = ? WHERE user_id = ?";
+    private static final String DELETE_FROM_USERS_WHERE_USER_ID =
+            "DELETE FROM USERS WHERE user_id = ?";
+    private static final String SELECT_FROM_USERS_WHERE_USER_ID =
+            "SELECT * FROM USERS WHERE user_id = ?";
+
+    private static final String SELECT_FROM_USERS =
+            "SELECT * FROM USERS";
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -33,9 +42,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User update(User user) {
         if (isUserExists(user.getId())) {
-            String sql = "UPDATE USERS SET email = ?, login = ?, name = ?, birthday = ?" +
-                    " WHERE user_id = ?";
-            jdbcTemplate.update(sql,
+            jdbcTemplate.update(SET_EMAIL_LOGIN_NAME_BIRTHDAY_WHERE_USER_ID,
                     user.getEmail(),
                     user.getLogin(),
                     user.getName(),
@@ -51,8 +58,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User remove(User user) {
         if (isUserExists(user.getId())) {
-            String sql = "DELETE FROM USERS WHERE user_id = ?";
-            jdbcTemplate.update(sql, user.getId());
+            jdbcTemplate.update(DELETE_FROM_USERS_WHERE_USER_ID, user.getId());
             log.info("User deleted: id={}", user.getId());
             return user;
         } else {
@@ -62,8 +68,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Optional<User> getById(Long id) {
-        String sql = "SELECT * FROM USERS WHERE user_id = ?";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, id);
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(SELECT_FROM_USERS_WHERE_USER_ID, id);
         if (userRows.next()) {
             User user = new User(
                     userRows.getLong("user_id"),
@@ -82,8 +87,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Collection<User> getUsers() {
-        String sql = "SELECT * FROM USERS";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new User(
+        return jdbcTemplate.query(SELECT_FROM_USERS, (rs, rowNum) -> new User(
                 rs.getLong("user_id"),
                 rs.getString("email"),
                 rs.getString("login"),
@@ -94,8 +98,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public boolean isUserExists(Long id) {
-        String sql = "SELECT * FROM USERS WHERE user_id = ?";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, id);
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(SELECT_FROM_USERS_WHERE_USER_ID, id);
         return userRows.next();
     }
 }

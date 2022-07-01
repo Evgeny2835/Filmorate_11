@@ -25673,3 +25673,42 @@ java.sql.SQLClientInfoException: Client info name 'ApplicationName' not supporte
 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
 	at java.base/java.lang.Thread.run(Thread.java:829)
+2022-06-30 21:45:21 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: Внутренняя ошибка: "org.h2.mvstore.MVStoreException: Transaction was illegally transitioned from ROLLED_BACK to COMMITTED [2.1.212/103]"
+General error: "org.h2.mvstore.MVStoreException: Transaction was illegally transitioned from ROLLED_BACK to COMMITTED [2.1.212/103]" [50000-212]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.message.DbException.toSQLException(DbException.java:367)
+	at org.h2.message.TraceObject.logAndConvert(TraceObject.java:365)
+	at org.h2.jdbc.JdbcConnection.isReadOnly(JdbcConnection.java:542)
+	at com.zaxxer.hikari.pool.PoolBase.setupConnection(PoolBase.java:408)
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:369)
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:206)
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:476)
+	at com.zaxxer.hikari.pool.HikariPool.access$100(HikariPool.java:71)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:726)
+	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712)
+	at java.base/java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:264)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+Caused by: org.h2.mvstore.MVStoreException: Transaction was illegally transitioned from ROLLED_BACK to COMMITTED [2.1.212/103]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.tx.Transaction.setStatus(Transaction.java:249)
+	at org.h2.mvstore.tx.Transaction.commit(Transaction.java:499)
+	at org.h2.engine.SessionLocal.commit(SessionLocal.java:672)
+	at org.h2.command.Command.stop(Command.java:157)
+	at org.h2.command.CommandContainer.stop(CommandContainer.java:264)
+	at org.h2.command.Command.executeQuery(Command.java:229)
+	at org.h2.jdbc.JdbcConnection.isReadOnly(JdbcConnection.java:538)
+	... 12 more
+	Suppressed: org.h2.mvstore.MVStoreException: Transaction was illegally transitioned from CLOSED to CLOSED [2.1.212/103]
+		at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+		at org.h2.mvstore.tx.Transaction.setStatus(Transaction.java:249)
+		at org.h2.mvstore.tx.Transaction.closeIt(Transaction.java:645)
+		at org.h2.mvstore.tx.TransactionStore.endTransaction(TransactionStore.java:612)
+		at org.h2.mvstore.tx.Transaction.commit(Transaction.java:511)
+		... 17 more

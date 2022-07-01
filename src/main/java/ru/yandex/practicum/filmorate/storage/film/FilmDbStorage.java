@@ -21,6 +21,16 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreStorage genreStorage;
     private final MpaStorage mpaStorage;
+    private static final String SET_MPA_ID_WHERE_FILM_ID =
+            "UPDATE FILMS SET mpa_id = ? WHERE film_id = ?";
+    private static final String SET_NAME_DESCRIPTION_RELEASEDATE_DURATION_MPA_ID_WHERE_FILM_ID =
+            "UPDATE FILMS SET name = ?, description = ?, releaseDate = ?, duration = ?, mpa_id = ? WHERE film_id = ?";
+    private static final String DELETE_FROM_FILMS_WHERE_FILM_ID =
+            "DELETE FROM FILMS WHERE film_id = ?";
+    private static final String SELECT_FROM_FILMS_WHERE_FILM_ID =
+            "SELECT * FROM FILMS WHERE film_id = ?";
+    private static final String SELECT_FROM_FILMS =
+            "SELECT * FROM FILMS";
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreStorage genreStorage, MpaStorage mpaStorage) {
         this.jdbcTemplate = jdbcTemplate;
@@ -35,7 +45,7 @@ public class FilmDbStorage implements FilmStorage {
                 .usingGeneratedKeyColumns("film_id");
         film.setId(simpleJdbcInsert.executeAndReturnKey(film.toMap()).longValue());
         genreStorage.addGenres(film);
-        jdbcTemplate.update("UPDATE FILMS SET mpa_id = ? WHERE film_id = ?",
+        jdbcTemplate.update(SET_MPA_ID_WHERE_FILM_ID,
                 film.getMpa().getId(),
                 film.getId()
         );
@@ -46,9 +56,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film update(Film film) {
         if (isFilmExists(film.getId())) {
-            String sql = "UPDATE FILMS SET name = ?, description = ?, releaseDate = ?," +
-                    " duration = ?, mpa_id = ? WHERE film_id = ?";
-            jdbcTemplate.update(sql,
+            jdbcTemplate.update(SET_NAME_DESCRIPTION_RELEASEDATE_DURATION_MPA_ID_WHERE_FILM_ID,
                     film.getName(),
                     film.getDescription(),
                     film.getReleaseDate(),
@@ -67,8 +75,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film remove(Film film) {
         if (isFilmExists(film.getId())) {
-            String sql = "DELETE FROM FILMS WHERE film_id = ?";
-            jdbcTemplate.update(sql, film.getId());
+            jdbcTemplate.update(DELETE_FROM_FILMS_WHERE_FILM_ID, film.getId());
             log.info("Film updated: id={}", film.getId());
             return film;
         } else {
@@ -78,7 +85,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Optional<Film> getById(Long id) {
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("SELECT * FROM FILMS WHERE film_id = ?", id);
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(SELECT_FROM_FILMS_WHERE_FILM_ID, id);
         if (filmRows.next()) {
             Film film = new Film(
                     filmRows.getLong("film_id"),
@@ -102,8 +109,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getFilms() {
-        String sql = "SELECT * FROM FILMS";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Film(
+        return jdbcTemplate.query(SELECT_FROM_FILMS, (rs, rowNum) -> new Film(
                 rs.getLong("film_id"),
                 rs.getString("name"),
                 rs.getString("description"),
@@ -116,8 +122,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public boolean isFilmExists(Long id) {
-        String sql = "SELECT * FROM FILMS WHERE film_id = ?";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, id);
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(SELECT_FROM_FILMS_WHERE_FILM_ID, id);
         return userRows.next();
     }
 }

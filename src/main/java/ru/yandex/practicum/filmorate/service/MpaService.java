@@ -13,22 +13,23 @@ import java.util.Collection;
 @Slf4j
 public class MpaService {
     private final JdbcTemplate jdbcTemplate;
+    private static final String SELECT_FROM_MPA_RATING = "SELECT * FROM MPA_RATING";
+    private static final String SELECT_NAME_FROM_MPA_RATING_WHERE_MPA_ID =
+            "SELECT NAME FROM MPA_RATING WHERE MPA_ID = ?";
 
     public MpaService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public Collection<Mpa> getMpa() {
-        String sql = "SELECT * FROM MPA_RATING";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Mpa(
+        return jdbcTemplate.query(SELECT_FROM_MPA_RATING, (rs, rowNum) -> new Mpa(
                 rs.getInt("mpa_id"),
                 rs.getString("name"))
         );
     }
 
     public Mpa get(int id) {
-        String sql = "SELECT NAME FROM MPA_RATING WHERE MPA_ID = ?";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, id);
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(SELECT_NAME_FROM_MPA_RATING_WHERE_MPA_ID, id);
         if (userRows.next()) {
             Mpa mpa = new Mpa(
                     id,
