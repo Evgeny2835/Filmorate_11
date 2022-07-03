@@ -1,4 +1,6 @@
+# my test delete from gitignore
 HELP.md
+
 *.class
 *.log
 *.jar
@@ -15,6 +17,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# my test delete from gitignore
 db/
 
 ### STS ###
